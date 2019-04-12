@@ -205,7 +205,7 @@ app.post('/client/account/register.html/post', urlencodedParser, function (req, 
         // console.log("Uploaded client file to S3");
     
         //console.log(response);
-        res.redirect(__dirname + "/client/project/" + "dashboard.html");
+        res.redirect("/client/project/" + "dashboard.html");
     } // end callback
 ); // end post
 
