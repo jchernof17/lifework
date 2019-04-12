@@ -6,89 +6,8 @@ var fs = require('fs');
 //might not need this path variable
 var path = require('path');
 var bcrypt = require('bcrypt'); // hashing
-/* var aws = require('aws-sdk'); //aws s3 */
 
-/*
-
-    ~~~MongoDB Server~~~
-    Table: (slightly different format)
-    1) id : number
-    2) object : dictionary
-    
-    Rules:
-    1) Every time we query, we look up by ID and then return the values item as an array
-    2) Every time we update, 
-*/
-const MongoClient = require('mongodb').MongoClient;
-const assert = require('assert');
-
-
-
-var database;
-// Connection URL
-//const url = ('mongodb://@%s:%s/', host, port);
-const url = ('mongodb://localhost:27017/'); /* localboi */
-//const url = ('mongodb+srv://jchernof:securePass@lwdbcluster-rpprd.mongodb.net/test?retryWrites=true');
-//const url = ('mongodb+srv://jchernof:securePass@lwdbcluster-rpprd.mongodb.net/test?ssl=true&authSource=admin');
-console.log("url");
-//http://%s:%s", host, port
-// Use connect method to connect to the Server
-const client = new MongoClient(url);
-var lwdb, freelancers_db, clients_db, projects_db;
-
-/* WRITE */
-// var d = {
-//     id: {
-
-//     }
-// }
-// freelancers_db.insert(d, (err, result) => {
-//     console.log(err || "successful input");
-// });
-
-/* READ */
-// console.log(freelancers_db.find({id:'1'}).toArray());
-/* freelancers_db = client.db('freelancers');
-freelancers_db.find({id:1}).toArray(function(err, docs) {
-    if (err) {
-        console.log(err)
-    } else {
-        console.log("%s records found", docs.length);
-    }
-  });
-*/
-setTimeout(function () { console.log("Waiting"); }, 3000);
-
-
-
-
-// var awsKey = require('./apikey'); //aws s3 keys (NEED TO UPLOAD YOUR OWN apikey.js file in root directory if running on localhost)
-
-
-// Configure aws
-/*
-Note about AWS: this (should) download files from AWS every time the server starts up.
-Any time a user action is taken, the files in AWS are re-written. 
-Not sure if this logic is foolproof^. (But I think it is).
-*/
-
-/* Uncomment if running on localhost */
-// aws.config.update({ 
-//     accessKeyId: awsKey['key'],
-//     secretAccessKey: awsKey['secret']
-// });
-// var s3 = new aws.S3();
-
-
-// Uncomment if running on heroku
-/*
-let s3 = new aws.S3({
-    accessKeyId: process.env.S3_KEY,
-    secretAccessKey: process.env.S3_SECRET
-});
-var bucket = "lifeworkonlinebucket";
-
-*/
+var baseURL = "https://www.picablostats.com/portal/";
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -155,7 +74,7 @@ var projects = {}
 
 
 
-// /*fs.readFile(freelancersFile, 'utf8', function readFileCallback(err, data) {
+// fs.readFile(freelancersFile, 'utf8', function readFileCallback(err, data) {
 //     if (err) {
 //         console.log(err);
 //     } else {
@@ -163,7 +82,8 @@ var projects = {}
 //         console.log("Read data file: " + obj);
 //         if (obj) freelancers = obj;
 //     }
-// });*/
+// });
+
 var read = (filePath) => {
     fs.readFile(filePath, 'utf8', function readFileCallback(err, data) {
         if (err) {
@@ -175,131 +95,41 @@ var read = (filePath) => {
         }
     });
 }
-/*
-var uploadFile = (filePath, bucketName) => {
-    var params = {
-            Bucket: bucketName,
-            Body: fs.createReadStream(__dirname + "/" + filePath),
-            Key: "folder/"+"_"+path.basename(filePath)
-        }
-    var backupparams = {
-        Bucket: bucketName,
-        Body: fs.createReadStream(__dirname + "/" + filePath),
-        Key: "backup/" + Date.now() + "_" + path.basename(filePath)
+
+// reads file (.json) into variable
+fs.readFile("freelancers.json", 'utf8', function readFileCallback(err, data) {
+    if (err) {
+        console.log(err);
+    } else {
+        obj = JSON.parse(data); //now it an object
+        console.log("Read data file old-fashioned way: " + obj);
+        if (obj) freelancers = obj;
     }
-        s3.upload(params, function (err, data) {
-            if (err) {
-                console.log("S3 error: ", err);
-            } else {
-                console.log("Write success: Check S3");
-                }
-        })
-        s3.upload(backupparams, function (err, data) {
-            if (err) {
-                console.log("S3 error: ", err);
-            } else {
-                console.log("Write backup success: Check S3");
-                }
-        })
-
-}
-
-var downloadFile = (filePath ,bucketName) => {
-    var params = {
-        Bucket: bucketName,
-        Key: "folder/"+"_"+path.basename(filePath)
+});
+// reads file (.json) into variable
+fs.readFile("clients.json", 'utf8', function readFileCallback(err, data) {
+    if (err) {
+        console.log(err);
+    } else {
+        obj = JSON.parse(data); //now it an object
+        console.log("Read data file old-fashioned way: " + obj);
+        if (obj) clients = obj;
     }
-    s3.getObject(params, (err, data) => {
-        if (err) console.error(err);
-        fs.writeFileSync(__dirname + "/" + filePath, data.Body.toString());
-        console.log('Readd success: ' + filePath);
-    })
-}
-
-var getFiles = () => {
-    downloadFile("freelancers.json", bucket);
-    downloadFile("clients.json", bucket);
-    downloadFile("projects.json", bucket);
-    fs.readFile("freelancers.json", 'utf8', function readFileCallback(err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            obj = JSON.parse(data); //now it an object
-            console.log("Read data file old-fashioned way: " + obj);
-            if (obj) freelancers = obj;
-        }
-    });
-    // reads file (.json) into variable
-    fs.readFile("clients.json", 'utf8', function readFileCallback(err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            obj = JSON.parse(data); //now it an object
-            console.log("Read data file old-fashioned way: " + obj);
-            if (obj) clients = obj;
-        }
-    });
-    // reads file (.json) into variable
-    fs.readFile("projects.json", 'utf8', function readFileCallback(err, data) {
-        if (err) {
-            console.log(err);
-        } else {
-            obj = JSON.parse(data); //now it an object
-            console.log("Read data file old-fashioned way: " + obj);
-            if (obj) projects = obj;
-        }
-    });
-}
-
-
-getFiles();
-*/
-//uploadFile("freelancers.json", bucket);
-//uploadFile("clients.json", bucket);
-//uploadFile("projects.json", bucket);
-/** Pulls data down from S3 into local files */
-// downloadFile("freelancers.json", bucket);
-// downloadFile("clients.json", bucket);
-// downloadFile("projects.json", bucket);
-// // freelancers = read("freelancers.json");
-// // clients = read("clients.json");
-
-// //projects = read("projects.json");
-
-// // reads file (.json) into variable
-// fs.readFile("freelancers.json", 'utf8', function readFileCallback(err, data) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         obj = JSON.parse(data); //now it an object
-//         console.log("Read data file old-fashioned way: " + obj);
-//         if (obj) freelancers = obj;
-//     }
-// });
-// // reads file (.json) into variable
-// fs.readFile("clients.json", 'utf8', function readFileCallback(err, data) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         obj = JSON.parse(data); //now it an object
-//         console.log("Read data file old-fashioned way: " + obj);
-//         if (obj) clients = obj;
-//     }
-// });
-// // reads file (.json) into variable
-// fs.readFile("projects.json", 'utf8', function readFileCallback(err, data) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         obj = JSON.parse(data); //now it an object
-//         console.log("Read data file old-fashioned way: " + obj);
-//         if (obj) projects = obj;
-//     }
-// });
+});
+// reads file (.json) into variable
+fs.readFile("projects.json", 'utf8', function readFileCallback(err, data) {
+    if (err) {
+        console.log(err);
+    } else {
+        obj = JSON.parse(data); //now it an object
+        console.log("Read data file old-fashioned way: " + obj);
+        if (obj) projects = obj;
+    }
+});
 
 
 app.use(express.static('public'));
-
+console.log("directory is: " + __dirname);
 //////////////////////\\\\\\\\\\\\\\\\\\\\\\
 //////////////// INDEX PAGE \\\\\\\\\\\\\\\\
 //////////////////////\\\\\\\\\\\\\\\\\\\\\\
@@ -331,7 +161,7 @@ app.get('/client/account/register.html', function (req, res) {
     res.sendFile(__dirname + "/client/account/" + "register.html");
 })
 app.post('/client/account/register.html/post', urlencodedParser, function (req, res) {
-    //getFiles();
+    
     // Prepare output in JSON format
     var p = '';
     // bcrypt.hash(req.body.password, 10, function(err, hash) {
@@ -347,26 +177,13 @@ app.post('/client/account/register.html/post', urlencodedParser, function (req, 
 
     // get length and replace here (client_id = length + 1)
     // var client_id = parseInt(Object.keys(clients).length + 1);
-    var client_id = 4;
     // insert {"id: "}
     // clients[client_id] = response;
     // console.log("num clients right now: " + clients_db.find().length);
 
-    // insert new client
-client.connect(function (err) {
     //console.log("in connect function");
-    if (err) {
-        console.log("error: " + err);
-    } else {
-        
-
-        console.log("succesfully connected client");
-        lwdb = client.db("lwdb");
-        clients_db = lwdb.collection("clients");
-        cid = (parseInt(clients_db.count()) || 0) + 1;
-        console.log(cid);
+    
         response = {
-            id: cid,
             firstname: req.body.firstname,
             lastname: req.body.lastname,
             email: req.body.email,
@@ -375,40 +192,22 @@ client.connect(function (err) {
             timestamp: time,
             hasPayment: false
         };
-
-        clients_db.insert(response, (err, result) => {
-                if (err) { console.log(err); }
-                else {
-                    console.log("registered client");
-                    console.log(cid);
-                }
-            }
-        ) // end insert function
-
-        req.session.user = cid;
-        console.log()
-        req.session.user_type = 'client';
-    
-        //TODO: AWS switchover (done)
-    
         fs.writeFile('clients.json', JSON.stringify(clients), 'utf8', (err) => {
             if (err) throw err;
             console.log('The file has been saved!');
         });
         
-        
+        var client_id = parseInt(Object.keys(clients).length) + 1;
+    clients[client_id] = response;
+    req.session.user = client_id;
+    req.session.user_type = 'client';
         // uploadFile("clients.json", bucket);
         // console.log("Uploaded client file to S3");
     
-        //take existing clients file and just upload (?)
-    
         //console.log(response);
-        res.redirect("/client/project/" + "dashboard.html");
-    } // end else statement
-}); // end client insert
-
-    
-})
+        res.redirect(__dirname + "/client/project/" + "dashboard.html");
+    } // end callback
+); // end post
 
 // project
 app.get('/client/project/approvescope.html', function (req, res) {
@@ -467,7 +266,7 @@ app.post('/client/account/login.html/post', urlencodedParser, function (req, res
             req.session.user = user_id;
             req.session.user_type = 'client';
             clients[user_id]['project_ids'] = matchEmails(req.body.email);
-            res.redirect('/client/project/dashboard.html');
+            res.redirect(__dirname + '/client/project/dashboard.html');
         } else {
             res.sendFile(__dirname + "/public/client/account/" + "login.html");
         }
@@ -502,7 +301,7 @@ app.get('/flogout', function (req, res) {
 })
 app.get('/clogout', function (req, res) {
     req.session.destroy();
-    res.redirect('/client/account/login.html');
+    res.redirect(__dirname + '/client/account/login.html');
     //res.end(req.session.user);
 })
 
@@ -769,43 +568,6 @@ app.get('/test', function (req, res) {
         '\nprojects:    ' + JSON.stringify(projects));
 })
 
-/*
-client.connect(function (err) {
-    //console.log("in connect function");
-    if (err) {
-        console.log("error: " + err);
-    } else {
-        
-
-        console.log("succesfully connected client");
-        lwdb = client.db("lwdb");
-        clients_db = lwdb.collection("clients");
-        cid = clients_db.find().length + 1;
-        response = {
-            id: cid,
-            firstname: req.body.firstname,
-            lastname: req.body.lastname,
-            email: req.body.email,
-            password: p,
-            project_ids: matchEmails(req.body.email),
-            timestamp: time,
-            hasPayment: false
-        };
-
-        clients_db.insert(response, (err, result) => {
-                if (err) { console.log(err); }
-                else {
-                    console.log("registered client");
-                    console.log(cid);
-                }
-            }
-        ) // end insert function
-
-        res.redirect("/client/project/" + "dashboard.html");
-
-    } // end else statement
-}); // end client insert
-*/
 
 app.get('/user_name', function (req, res) {
     if (req.session.user) {
@@ -813,40 +575,10 @@ app.get('/user_name', function (req, res) {
             res.end("");
         } else {
             if (req.session.user_type == "freelancer") {
-                client.connect(function (err) {
-                    lwdb = client.db("lwdb");
-                    freelancers_db = lwdb.collection("freelancers");
-                    //console.log("in connect function");
-                    if (err) {
-                        console.log("error: " + err);
-                    } else {
-                        freelancers_db.find(({id:req.session.user}, {firstname:1}), (err, result) => {
-                                if (err) { console.log(err); }
-                                else {
-                                    console.log("result = "+ result);
-                                    res.end(toString(result[0]));
-                                }
-                            }
-                        ) // end insert function
-                    } // end else statement
-                }); // end client insert
-                // res.end(freelancers[req.session.user]['firstname']);
+                res.end(freelancers[req.session.user]['firstname']);
             }
             else {
-                client.connect(function (err) {
-                    lwdb = client.db("lwdb");
-                    clients_db = lwdb.collection("clients");
-                    //console.log("in connect function");
-                    if (err) {
-                        console.log("error: " + err);
-                    } else {
-                        console.log("looking for someone with user id " + req.session.user);
-                        var r = clients_db.find({id:req.session.user},{firstname:1});
-                        console.log("found " + r.nextObject());
-                        res.end(toString(r.firstname));
-                        //) // end insert function
-                    } // end else statement
-                }); // end client insert
+                res.end(clients[req.session.user]['firstname']);
             }
         }
     } else {
@@ -967,7 +699,7 @@ function matchEmails(client_email) {
     return project_ids;
 }
 
-var server = app.listen(process.env.PORT || 8081, function () {
+var server = app.listen(process.env.PORT || 8089, "picablostats.com", function () {
     var host = server.address().address
     var port = server.address().port
 
