@@ -6,7 +6,7 @@ var fs = require('fs');
 //might not need this path variable
 var path = require('path');
 var bcrypt = require('bcrypt'); // hashing
-
+var __dirname = "";
 var baseURL = "https://www.picablostats.com/portal/";
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
