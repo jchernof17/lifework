@@ -5,8 +5,9 @@ var session = require('express-session');
 var fs = require('fs');
 //might not need this path variable
 var path = require('path');
+var picabloFilePath = "";
 var bcrypt = require('bcrypt'); // hashing
-var __dirname = "";
+// var __dirname = "";
 var baseURL = "https://www.picablostats.com/portal/";
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -129,13 +130,13 @@ fs.readFile("projects.json", 'utf8', function readFileCallback(err, data) {
 
 
 app.use(express.static('public'));
-console.log("directory is: " + __dirname);
+console.log("directory is: " + picabloFilePath);
 //////////////////////\\\\\\\\\\\\\\\\\\\\\\
 //////////////// INDEX PAGE \\\\\\\\\\\\\\\\
 //////////////////////\\\\\\\\\\\\\\\\\\\\\\
 app.get('/', function (req, res) {
     //getFiles();
-    res.sendFile(__dirname + "" + "index.html");
+    res.sendFile(picabloFilePath + "" + "index.html");
 })
 
 //////////////////////\\\\\\\\\\\\\\\\\\\\\\
@@ -144,7 +145,7 @@ app.get('/', function (req, res) {
 
 // account
 app.get('/client/account/addpayment.html', function (req, res) {
-    res.sendFile(__dirname + "/client/account/" + "addpayment.html");
+    res.sendFile(picabloFilePath + "/client/account/" + "addpayment.html");
 })
 
 //TODO this
@@ -158,7 +159,7 @@ app.post('/client/account/addpayment.html/post', urlencodedParser, function (req
 })
 
 app.get('/client/account/register.html', function (req, res) {
-    res.sendFile(__dirname + "/client/account/" + "register.html");
+    res.sendFile(picabloFilePath + "/client/account/" + "register.html");
 })
 app.post('/client/account/register.html/post', urlencodedParser, function (req, res) {
     
@@ -211,7 +212,7 @@ app.post('/client/account/register.html/post', urlencodedParser, function (req, 
 
 // project
 app.get('/client/project/approvescope.html', function (req, res) {
-    res.sendFile(__dirname + "/client/project/" + "approvescope.html");
+    res.sendFile(picabloFilePath + "/client/project/" + "approvescope.html");
 })
 app.post('/client/project/approvescope.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
@@ -223,7 +224,7 @@ app.post('/client/project/approvescope.html/post', urlencodedParser, function (r
 })
 
 app.get('/client/project/dashboard.html', function (req, res) {
-    res.sendFile(__dirname + "/client/project/" + "dashboard.html");
+    res.sendFile(picabloFilePath + "/client/project/" + "dashboard.html");
 })
 app.post('/client/project/dashboard.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
@@ -237,7 +238,7 @@ app.post('/client/project/dashboard.html/post', urlencodedParser, function (req,
 
 app.get('/client/account/login.html', function (req, res) {
     //getFiles();
-    res.sendFile(__dirname + "/client/account/" + "login.html");
+    res.sendFile(picabloFilePath + "/client/account/" + "login.html");
 })
 app.post('/client/account/login.html/post', urlencodedParser, function (req, res) {
     //getFiles();
@@ -256,7 +257,7 @@ app.post('/client/account/login.html/post', urlencodedParser, function (req, res
     };
     console.log('login user id ' + user_id);
     if (user_id == -1) {
-        res.sendFile(__dirname + "/public/client/account/" + "login.html");
+        res.sendFile(picabloFilePath + "/public/client/account/" + "login.html");
     } else {
 
         //if (req.body.password == clients[user_id]['password']) {
@@ -266,14 +267,14 @@ app.post('/client/account/login.html/post', urlencodedParser, function (req, res
             req.session.user = user_id;
             req.session.user_type = 'client';
             clients[user_id]['project_ids'] = matchEmails(req.body.email);
-            res.redirect(__dirname + '/client/project/dashboard.html');
+            res.redirect(picabloFilePath + '/client/project/dashboard.html');
         } else {
-            res.sendFile(__dirname + "/public/client/account/" + "login.html");
+            res.sendFile(picabloFilePath + "/public/client/account/" + "login.html");
         }
     }
 
     console.log(response);
-    res.sendFile(__dirname + "/public/client/account/" + "login.html");
+    res.sendFile(picabloFilePath + "/public/client/account/" + "login.html");
 })
 
 // if (clients[req.session.user]['timestamp'] == req.body.key) {
@@ -301,12 +302,12 @@ app.get('/flogout', function (req, res) {
 })
 app.get('/clogout', function (req, res) {
     req.session.destroy();
-    res.redirect(__dirname + '/client/account/login.html');
+    res.redirect(picabloFilePath + '/client/account/login.html');
     //res.end(req.session.user);
 })
 
 app.get('/freelancer/account/addinfo.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/account/" + "addinfo.html");
+    res.sendFile(picabloFilePath + "/freelancer/account/" + "addinfo.html");
 })
 app.post('/freelancer/account/addinfo.html/post', urlencodedParser, function (req, res) {
     getFiles();
@@ -329,7 +330,7 @@ app.post('/freelancer/account/addinfo.html/post', urlencodedParser, function (re
 })
 
 app.get('/freelancer/account/addpayment.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/account/" + "addpayment.html");
+    res.sendFile(picabloFilePath + "/freelancer/account/" + "addpayment.html");
 })
 app.post('/freelancer/account/addpayment.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
@@ -341,7 +342,7 @@ app.post('/freelancer/account/addpayment.html/post', urlencodedParser, function 
 })
 app.get('/freelancer/account/login.html', function (req, res) {
     getFiles();
-    res.sendFile(__dirname + "/freelancer/account/" + "login.html");
+    res.sendFile(picabloFilePath + "/freelancer/account/" + "login.html");
 })
 app.post('/freelancer/account/login.html/post', urlencodedParser, function (req, res) {
     getFiles();
@@ -360,7 +361,7 @@ app.post('/freelancer/account/login.html/post', urlencodedParser, function (req,
     };
     console.log('user id ' + user_id);
     if (user_id == -1) {
-        res.sendFile(__dirname + "/public/freelancer/account/" + "login.html");
+        res.sendFile(picabloFilePath + "/public/freelancer/account/" + "login.html");
     } else {
 
         if (bcrypt.compareSync(req.body.password, freelancers[user_id]['password'])) {
@@ -369,14 +370,14 @@ app.post('/freelancer/account/login.html/post', urlencodedParser, function (req,
             req.session.user_type = 'freelancer';
             res.redirect('/freelancer/project/dashboard.html');
         } else {
-            res.sendFile(__dirname + "/public/freelancer/account/" + "login.html");
+            res.sendFile(picabloFilePath + "/public/freelancer/account/" + "login.html");
         }
     };
     console.log(response);
-    res.sendFile(__dirname + "/public/freelancer/account/" + "login.html");
+    res.sendFile(picabloFilePath + "/public/freelancer/account/" + "login.html");
 })
 app.get('/freelancer/account/register.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/account/" + "register.html");
+    res.sendFile(picabloFilePath + "/freelancer/account/" + "register.html");
 })
 app.post('/freelancer/account/register.html/post', urlencodedParser, function (req, res) {
     getFiles();
@@ -412,7 +413,7 @@ app.post('/freelancer/account/register.html/post', urlencodedParser, function (r
 
 // PROJECT
 app.get('/freelancer/project/addclient.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/project/" + "addclient.html");
+    res.sendFile(picabloFilePath + "/freelancer/project/" + "addclient.html");
 })
 app.post('/freelancer/project/addclient.html/post', urlencodedParser, function (req, res) {
     getFiles();
@@ -464,7 +465,7 @@ app.post('/freelancer/project/addclient.html/post', urlencodedParser, function (
 })
 
 app.get('/freelancer/project/addmilestones.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/project/" + "addmilestones.html");
+    res.sendFile(picabloFilePath + "/freelancer/project/" + "addmilestones.html");
 })
 app.post('/freelancer/project/addmilestones.html/post', urlencodedParser, function (req, res) {
     getFiles();
@@ -506,7 +507,7 @@ app.post('/freelancer/project/addmilestones.html/post', urlencodedParser, functi
 })
 
 app.get('/freelancer/project/dashboard.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/project/" + "dashboard.html");
+    res.sendFile(picabloFilePath + "/freelancer/project/" + "dashboard.html");
 })
 app.post('/freelancer/project/dashboard.html/post', urlencodedParser, function (req, res) {
     /** Should never be reached */
@@ -530,7 +531,7 @@ app.post('/freelancer/project/dashboard.html/post', urlencodedParser, function (
 })
 
 app.get('/freelancer/project/fillmilestones.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/project/" + "fillmilestones.html");
+    res.sendFile(picabloFilePath + "/freelancer/project/" + "fillmilestones.html");
 })
 app.post('/freelancer/project/fillmilestones.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
@@ -542,7 +543,7 @@ app.post('/freelancer/project/fillmilestones.html/post', urlencodedParser, funct
 })
 
 app.get('/freelancer/project/reviewproject.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/project/" + "reviewproject.html");
+    res.sendFile(picabloFilePath + "/freelancer/project/" + "reviewproject.html");
 })
 app.post('/freelancer/project/reviewproject.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
@@ -553,7 +554,7 @@ app.post('/freelancer/project/reviewproject.html/post', urlencodedParser, functi
     res.end(JSON.stringify(response));
 })
 app.get('/freelancer/addstripe.html', function (req, res) {
-    res.sendFile(__dirname + "/freelancer/" + "addstripe.html");
+    res.sendFile(picabloFilePath + "/freelancer/" + "addstripe.html");
 })
 
 
