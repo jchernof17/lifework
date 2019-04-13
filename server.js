@@ -310,7 +310,7 @@ app.get('/freelancer/account/addinfo.html', function (req, res) {
     res.sendFile(picabloFilePath + "/freelancer/account/" + "addinfo.html");
 })
 app.post('/freelancer/account/addinfo.html/post', urlencodedParser, function (req, res) {
-    getFiles();
+    //getFiles();
     // Prepare output in JSON format
     freelancers[req.session.user]['field'] = req.body.lineOfWork;
     freelancers[req.session.user]['hours'] = req.body.typeOfFreelancer;
@@ -341,11 +341,11 @@ app.post('/freelancer/account/addpayment.html/post', urlencodedParser, function 
     res.end(JSON.stringify(response));
 })
 app.get('/freelancer/account/login.html', function (req, res) {
-    getFiles();
+    //getFiles();
     res.sendFile(picabloFilePath + "/freelancer/account/" + "login.html");
 })
 app.post('/freelancer/account/login.html/post', urlencodedParser, function (req, res) {
-    getFiles();
+    //getFiles();
     // Prepare output in JSON format
     response = {
         email: req.body.email,
@@ -380,7 +380,7 @@ app.get('/freelancer/account/register.html', function (req, res) {
     res.sendFile(picabloFilePath + "/freelancer/account/" + "register.html");
 })
 app.post('/freelancer/account/register.html/post', urlencodedParser, function (req, res) {
-    getFiles();
+    //getFiles();
     // Prepare output in JSON format
     // this is filled out
     var time = new Date().getUTCMilliseconds(); // creates validation time for each user
@@ -416,7 +416,7 @@ app.get('/freelancer/project/addclient.html', function (req, res) {
     res.sendFile(picabloFilePath + "/freelancer/project/" + "addclient.html");
 })
 app.post('/freelancer/project/addclient.html/post', urlencodedParser, function (req, res) {
-    getFiles();
+    //getFiles();
     // Prepare output in JSON format
     var proj_id = parseInt(Object.keys(projects).length + 1);
 
@@ -468,7 +468,7 @@ app.get('/freelancer/project/addmilestones.html', function (req, res) {
     res.sendFile(picabloFilePath + "/freelancer/project/" + "addmilestones.html");
 })
 app.post('/freelancer/project/addmilestones.html/post', urlencodedParser, function (req, res) {
-    getFiles();
+    //getFiles();
     // Prepare output in JSON format
     var amount;
     amount = req.body.fixedAmount;
