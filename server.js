@@ -214,6 +214,8 @@ app.post('/client/account/register.html/post', urlencodedParser, function (req, 
 app.get('/client/project/approvescope.html', function (req, res) {
     res.sendFile(picabloFilePath + "/client/project/" + "approvescope.html");
 })
+
+
 app.post('/client/project/approvescope.html/post', urlencodedParser, function (req, res) {
     // Prepare output in JSON format
     response = {
