@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brianfu9/lifework.git"
+    "url": "git+https://github.com/jchernof17/lifework.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/brianfu9/lifework/issues"
+    "url": "https://github.com/jchernof17/lifework/issues"
   },
-  "homepage": "https://github.com/brianfu9/lifework#readme",
+  "homepage": "https://github.com/jchernof17/lifework#readme",
   "dependencies": {
     "aws-sdk": "^2.430.0",
     "bcrypt": "^3.0.5",
